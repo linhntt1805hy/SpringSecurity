@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Author Page</title>
+</head>
+<body>
+<h1>Authors</h1>
+<pre id="authorData"></pre>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Lấy token từ URL hash
+        const hash = window.location.hash.substring(1); // Bỏ dấu #
+        const params = new URLSearchParams(hash);
+        const token = params.get('token');
+
+        if (token) {
+            // Lưu token vào sessionStorage hoặc localStorage
+            sessionStorage.setItem('token', token);
+
+            // Thực hiện yêu cầu API với token
+            fetch('/api/authors', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => response.json())
+                .then(data => {
+                    console.log('Authors:', data);
+                    // Hiển thị dữ liệu trên trang
+                    document.getElementById('authorData').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('authorData').textContent = 'Failed to fetch authors';
+                });
+        } else {
+            document.getElementById('authorData').textContent = 'No token found';
+        }
+    });
+</script>
+</body>
+</html>
